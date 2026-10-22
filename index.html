@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Зерно 35</title>
+<meta name="description" content="Плёночная камера в телефоне: 13 культовых камер, зерно, засветы и дата в углу кадра.">
+<meta name="theme-color" content="#fbf6fa">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Зерно 35">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preload" href="golos-text-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="jetbrains-mono-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="logo" aria-label="Зерно 35">Зерно<small>35</small></div>
+    <div class="lcd" aria-label="Счётчик кадров">
+      <span class="lcd-k">КАДР</span><b id="frameNo">00</b><span class="lcd-of">/36</span>
+      <span class="lcd-sep"></span><span class="lcd-iso" id="isoLbl">ISO 400</span>
+    </div>
+  </header>
+
+  <section class="finder" id="finder" aria-label="Видоискатель">
+    <video id="live" playsinline muted autoplay hidden></video>
+    <div class="gate" id="gate" hidden>
+      <div class="g-tint" id="gTint"></div>
+      <div class="g-vig" id="gVig"></div>
+      <div class="g-grain" id="gGrain"></div>
+      <div class="g-date" id="gDate"></div>
+    </div>
+    <img id="photo" alt="Текущий кадр с эффектом плёнки">
+    <span class="mark tl"></span><span class="mark tr"></span><span class="mark bl"></span><span class="mark br"></span>
+    <span class="tag" id="sampleTag">Пример кадра</span>
+
+    <button class="pill tl" id="toLive" type="button" hidden>
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>К камере
+    </button>
+    <button class="round corner r" id="flipCam" type="button" aria-label="Сменить камеру телефона" hidden>
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><path d="M9 13.5a3 3 0 0 0 5.6 1.5M15 12.5a3 3 0 0 0-5.6-1.5"/><path d="M14.6 15h-1.8M9.4 11h1.8"/></svg>
+    </button>
+    <button class="round corner r" id="expand" type="button" aria-label="Открыть кадр на весь экран">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5"/></svg>
+    </button>
+
+    <div class="cta" id="camStart" hidden>
+      <div class="cta-in">
+        <button class="btn primary" id="camStartBtn" type="button">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Включить камеру
+        </button>
+        <p>В видоискателе сразу видно, как снимет выбранная камера</p>
+      </div>
+    </div>
+
+    <div class="dev" id="dev" hidden><i></i>Проявляем…</div>
+    <button class="pill hold" id="compare" type="button" aria-pressed="false" title="Удерживай, чтобы увидеть исходное фото">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 4v16"/></svg>Оригинал
+    </button>
+    <button class="pill save" id="finderSave" type="button">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span id="finderSaveLbl">В галерею</span>
+    </button>
+  </section>
+
+  <section class="controls">
+    <div class="scroller" id="cams" role="group" aria-label="Камера"></div>
+    <p class="desc" id="desc"><b id="dLens"></b><span id="dText"></span></p>
+    <div class="scroller" id="films" role="group" aria-label="Плёнка"><span class="lbl">Плёнка</span></div>
+    <div class="scroller" id="opts" role="group" aria-label="Эффекты">
+      <button class="chip" id="tDate" type="button" aria-pressed="true">Дата</button>
+      <button class="chip" id="tLeak" type="button" aria-pressed="false">Засвет</button>
+      <button class="chip icon" id="reroll" type="button" aria-label="Другой засвет" title="Другой засвет">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>
+      </button>
+      <button class="chip" id="tBorder" type="button" aria-pressed="false">Рамка плёнки</button>
+      <button class="chip" id="tFlash" type="button" aria-pressed="false" hidden>Вспышка</button>
+    </div>
+    <label class="grain" for="grain"><span>Зерно</span><input type="range" id="grain" min="0" max="100" step="5" value="50"><output id="grainVal" for="grain">50</output></label>
+  </section>
+
+  <nav class="deck" aria-label="Съёмка">
+    <button class="side" id="btnPick" type="button">
+      <span class="ic"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg></span>Из галереи
+    </button>
+    <button class="shutter" id="btnShoot" type="button" aria-label="Снять кадр"><span></span></button>
+    <button class="side" id="btnRoll" type="button">
+      <span class="ic-wrap"><span class="ic" id="rollIc"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M3 15h18M7 5v4M11 5v4M15 5v4M7 15v4M11 15v4M15 15v4"/></svg></span><span class="badge" id="rollBadge" hidden>0</span></span>Плёнка
+    </button>
+  </nav>
+</div>
+
+<input type="file" id="shoot" accept="image/*" capture="environment" class="vh" tabindex="-1" aria-hidden="true">
+<input type="file" id="pick" accept="image/*" class="vh" tabindex="-1" aria-hidden="true">
+
+<div class="install" id="install" hidden>
+  <p id="installText">Поставь «Зерно 35» на главный экран: откроется как обычное приложение и будет работать без интернета.</p>
+  <button class="btn primary" id="installBtn" type="button" hidden>Установить</button>
+  <button class="round" id="installClose" type="button" aria-label="Скрыть подсказку">
+    <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vTitle" hidden>
+  <div class="v-top">
+    <button class="round" id="vClose" type="button" aria-label="Закрыть">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="v-head"><h2 class="v-title" id="vTitle">Кадр</h2><p class="v-meta" id="vMeta"></p></div>
+    <span class="v-count" id="vCount"></span>
+  </div>
+  <div class="v-stage" id="vStage">
+    <img id="vImg" alt="Кадр на весь экран">
+    <button class="round v-nav prev" id="vPrev" type="button" aria-label="Предыдущий кадр">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <button class="round v-nav next" id="vNext" type="button" aria-label="Следующий кадр">
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+  <div class="v-bottom">
+    <button class="btn primary" id="vSave" type="button"></button>
+    <div class="v-row">
+      <button class="btn ghost" id="vShare" type="button" hidden>Поделиться</button>
+      <button class="btn ghost" id="vEdit" type="button">Сменить камеру или плёнку</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-wrap" id="roll" hidden>
+  <div class="backdrop" id="rollBackdrop"></div>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="rollTitle">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheet-h">
+      <div><h2 id="rollTitle">Плёнка</h2><p id="rollCount">0 из 36 кадров</p></div>
+      <button class="round" id="rollClose" type="button" aria-label="Закрыть">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="banner" id="rollFull" hidden>Плёнка закончилась. Сохрани нужные кадры в галерею и заряди новую.</p>
+    <div class="thumbs" id="thumbs"></div>
+    <div class="sheet-f">
+      <p class="empty" id="rollEmpty">Пока пусто. Нажми спуск, и кадр появится здесь.</p>
+      <button class="btn ghost" id="newRoll" type="button">Зарядить новую плёнку</button>
+      <div class="confirm" id="confirm" hidden>
+        <p id="confirmText"></p>
+        <div class="confirm-row">
+          <button class="btn ghost" id="confirmNo" type="button">Отмена</button>
+          <button class="btn primary" id="confirmYes" type="button">Зарядить</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

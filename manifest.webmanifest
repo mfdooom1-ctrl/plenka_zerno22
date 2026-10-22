@@ -1,0 +1,19 @@
+{
+  "name": "Зерно 35",
+  "short_name": "Зерно 35",
+  "description": "Плёночная камера в телефоне: 13 культовых камер, зерно, засветы и дата в углу кадра.",
+  "lang": "ru",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf6fa",
+  "theme_color": "#fbf6fa",
+  "categories": ["photo"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
